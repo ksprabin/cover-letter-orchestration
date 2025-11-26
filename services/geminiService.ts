@@ -1,8 +1,6 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { JobExtraction, ARTIFACT_URLS } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const EXTRACTION_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: {
@@ -16,7 +14,15 @@ const EXTRACTION_SCHEMA: Schema = {
   required: ["company", "requirements"]
 };
 
+// Lazy initialization of the API client.
+// This prevents the app from crashing on load (Blank Page) if process.env is accessed 
+// before the environment is fully set up or if 'process' is undefined in the global scope.
+const getGenAI = () => {
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
+};
+
 export const extractJobDetails = async (jobDescription: string): Promise<JobExtraction> => {
+  const ai = getGenAI();
   const userQuery = `Analyze the job description below. Identify the hiring company name and list the 5 most critical, specific skills or requirements for this role.
             
   --- JOB DESCRIPTION ---
@@ -40,6 +46,7 @@ export const extractJobDetails = async (jobDescription: string): Promise<JobExtr
 };
 
 export const generateCoverLetter = async (extractedData: JobExtraction, userExperience: string): Promise<string> => {
+  const ai = getGenAI();
   const { company, requirements } = extractedData;
   const requirementsList = requirements.join(', ');
 
