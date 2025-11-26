@@ -1,0 +1,5 @@
+{
+  "name": "Orchestrator Cover Letter Generator",
+  "description": "A two-step AI agent that extracts job requirements and generates a highly tailored, professional cover letter.",
+  "requestFramePermissions": []
+}
